@@ -6,6 +6,7 @@ CREATE TABLE `users` (
   `email` VARCHAR(120) NULL,
   `mobile` VARCHAR(15) NULL,
   `password` VARCHAR(100) NULL,
+  `role_id` BIGINT NOT NULL,
   `status` TINYINT(2) NOT NULL,
   `created_on` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_on` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -18,9 +19,10 @@ CREATE TABLE `user_tokens` (
   `issued_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `expires_in` INT NULL,
   `device_id` VARCHAR(100) NULL,
-  PRIMARY KEY (`id`));
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `token_UNIQUE` (`token` ASC) VISIBLE);
 
-ALTER TABLE `user_tokens` ADD CONSTRAINT `userFk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+ALTER TABLE `user_tokens` ADD CONSTRAINT `user_tokens_userFk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 CREATE TABLE `roles` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -31,6 +33,8 @@ CREATE TABLE `roles` (
   `updated_on` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `code_UNIQUE` (`code` ASC) VISIBLE);
+
+ALTER TABLE `users` ADD CONSTRAINT `users_roleFk` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
 
 CREATE TABLE `apis` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -52,6 +56,6 @@ CREATE TABLE `role_api` (
   `updated_on` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`));
 
-ALTER TABLE `role_api` ADD CONSTRAINT `roleFk` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
+ALTER TABLE `role_api` ADD CONSTRAINT `role_api_roleFk` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
 
-ALTER TABLE `role_api` ADD CONSTRAINT `apiFk` FOREIGN KEY (`api_id`) REFERENCES `apis` (`id`);
+ALTER TABLE `role_api` ADD CONSTRAINT `role_api_apiFk` FOREIGN KEY (`api_id`) REFERENCES `apis` (`id`);
