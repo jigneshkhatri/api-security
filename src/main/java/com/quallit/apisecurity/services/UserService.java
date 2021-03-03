@@ -4,6 +4,7 @@
 package com.quallit.apisecurity.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,9 @@ public class UserService implements ICreateUpdateService<User>, IReadService<Use
 	@Autowired
 	private UserTokenService userTokenService;
 
+	@Value("${multi.device.login.allowed}")
+	private Boolean isMultiDeviceLoginAllowed;
+
 	@Override
 	public JpaRepository<User, Long> getRepository() {
 		return this.userRepository;
@@ -61,6 +65,11 @@ public class UserService implements ICreateUpdateService<User>, IReadService<Use
 		}
 		if (!this.passwordEncoder.matches(password, user.getPassword())) {
 			throw new AuthException(AuthException.Codes.QA_006);
+		}
+		if (!ObjectUtil.isTrue(this.isMultiDeviceLoginAllowed, true)) {
+			// multi device login is not allowed.. so delete older token so user gets logout
+			// from older device
+			this.userTokenService.deleteByUserId(user.getId());
 		}
 		UserToken userToken = this.userTokenService.saveToken(user.getId());
 		user.setUserToken(userToken);

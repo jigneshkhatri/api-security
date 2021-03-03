@@ -16,4 +16,6 @@ import com.quallit.apisecurity.entities.UserToken;
 public interface IUserTokenRepository extends JpaRepository<UserToken, Long> {
 
 	public UserToken findByToken(String token);
+
+	public void deleteByUserId(Long userId);
 }

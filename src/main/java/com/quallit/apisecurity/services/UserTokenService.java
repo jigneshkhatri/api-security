@@ -53,4 +53,9 @@ public class UserTokenService implements IReadService<UserToken> {
 		return this.userTokenRepository.save(obj);
 	}
 
+	@Transactional
+	public void deleteByUserId(long userId) {
+		this.userTokenRepository.deleteByUserId(userId);
+	}
+
 }
