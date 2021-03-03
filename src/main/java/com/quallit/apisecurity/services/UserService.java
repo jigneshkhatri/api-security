@@ -59,7 +59,7 @@ public class UserService implements ICreateUpdateService<User>, IReadService<Use
 		if (ObjectUtil.isEmpty(user)) {
 			throw new AuthException(AuthException.Codes.QA_005);
 		}
-		if (this.passwordEncoder.matches(password, user.getPassword())) {
+		if (!this.passwordEncoder.matches(password, user.getPassword())) {
 			throw new AuthException(AuthException.Codes.QA_006);
 		}
 		UserToken userToken = this.userTokenService.saveToken(user.getId());

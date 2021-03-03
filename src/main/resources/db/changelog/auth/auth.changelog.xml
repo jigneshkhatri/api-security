@@ -11,4 +11,9 @@
 		<sqlFile encoding="utf8"
 			path="db/changelog/auth/1614355803766.sql" />
 	</changeSet>
+  <changeSet id="1614779798247" author="jigs">
+		<comment>Added roles and APIs</comment>
+		<sqlFile encoding="utf8"
+			path="db/changelog/auth/1614779798247.sql" />
+	</changeSet>
 </databaseChangeLog>
