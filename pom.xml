@@ -2,42 +2,33 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.4.3</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
 	<groupId>com.quallit</groupId>
-	<artifactId>api-security</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
-	<name>api-security</name>
-	<description>Core API Security</description>
+	<artifactId>quallit-spring-boot-starter</artifactId>
+	<version>2.4.3</version>
+	<packaging>jar</packaging>
+	<name>quallit-spring-boot-starter</name>
+	<description>Spring boot starter with basic Abstract components, along with API Secuirty.</description>
 	<properties>
 		<java.version>11</java.version>
+		<spring.version>2.4.3</spring.version>
 		<mapstruct.version>1.4.2.Final</mapstruct.version>
 		<liquibase.version>4.3.1</liquibase.version>
+		<spring.crypto.version>5.4.5</spring.crypto.version>
+		<javax.validation.version>2.0.1.Final</javax.validation.version>
+		<maven.compiler.version>3.8.1</maven.compiler.version>
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-web</artifactId>
+		    <version>${spring.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-data-jpa</artifactId>
+		    <version>${spring.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
+	
 		<dependency>
 	      <groupId>org.liquibase</groupId>
 	      <artifactId>liquibase-core</artifactId>
@@ -51,37 +42,29 @@
 		<dependency>
 		    <groupId>org.springframework.security</groupId>
 		    <artifactId>spring-security-crypto</artifactId>
-		    <version>5.4.5</version>
+		    <version>${spring.crypto.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>javax.validation</groupId>
 		    <artifactId>validation-api</artifactId>
-		    <version>2.0.1.Final</version>
-		</dependency>
-		<dependency> 
-		    <groupId>org.springframework.boot</groupId> 
-		    <artifactId>spring-boot-starter-validation</artifactId> 
+		    <version>${javax.validation.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-validation</artifactId>
+		    <version>${spring.version}</version>
 		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.1</version>
+            <version>${maven.compiler.version}</version>
             <configuration>
-                <source>11</source> <!-- depending on your project -->
-                <target>11</target> <!-- depending on your project -->
+                <source>${java.version}</source> <!-- depending on your project -->
+                <target>${java.version}</target> <!-- depending on your project -->
                 <annotationProcessorPaths>
                     <path>
                         <groupId>org.mapstruct</groupId>
@@ -94,15 +77,4 @@
         </plugin>
 		</plugins>
 	</build>
-	<profiles>
-		<profile>
-			<id>dev</id>
-			<properties>
-				<activatedProperties>dev</activatedProperties>
-			</properties>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-		</profile>
-	</profiles>
 </project>
