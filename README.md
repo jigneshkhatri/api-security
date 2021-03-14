@@ -65,12 +65,12 @@ Spring boot starter project, with all the abstract classes for controller, servi
   * `users` - Contains basic user details along with role
   * `roles` - Contains roles, which can be assigned to users
   * `apis` - Should contain all the APIs, which needs to be secured. The APIs which contains `/s/` in their request path, are secured by default when Quallit API Security layer is enabled.
-  * `role_api` - Maps roles, with the allowed APIs
+  * `role_api` - Maps APIs, with the allowed roles
   * `user_tokens` - Contains the access tokens, and other user login details
 
 #### Endpoints to consider:
 * **User Registration:**
-  * Request path: `POST /user/register`
+  * Endpoint: `POST /user/register`
   * Request body:
     * ```
       {
@@ -86,7 +86,7 @@ Spring boot starter project, with all the abstract classes for controller, servi
     * 500: When required fields are missing, or mobile number is not unique, or any other validation fails. Proper error message will be included in response body.
   * NOTE: Password is hased by BCrypt alogrithm, and only hash is stored in database.
 * **Login:**
-  * Request path: `POST /user/login`
+  * Endpoint: `POST /user/login`
   * Request body:
     * ```
       {
@@ -117,14 +117,14 @@ Spring boot starter project, with all the abstract classes for controller, servi
         ```
     * 500: If username and/or password are invalid or user is not active, or there is any error in login. Proper error message will be included in response body.
 * **My (User's Own) Details:**
-  * Request path: `GET /user/s/me`
+  * Endpoint: `GET /user/s/me`
   * Header: `Q-AUTH` Value: `<token>`
   * Possible response:
     * 200: If token is valid, user's details will be returned in response body.
     * 403: If token is not valid or expired.
     * 500: If anything wents wrong. Proper error message will be included in response body.
 * **Active Logins:**
-  * Request path: `GET /user/s/activeLogins`
+  * Endpoint: `GET /user/s/activeLogins`
   * Header: `Q-AUTH` Value: `<token>`
   * Possible response:
      * 200: If token is valid, all the user's active logins (sessions) will be returned. Below is the sample response body:
@@ -158,9 +158,25 @@ Spring boot starter project, with all the abstract classes for controller, servi
       * 403: If token is not valid or expired.
       * 500: If anything wents wrong. Proper error message will be included in response body.
 * **Revoke any own active token:**
-  * Request path: `DELETE /user/s/revokeToken/4 (token Id)`
+  * Endpoint: `DELETE /user/s/revokeToken/4 (token Id)`
   * Header: `Q-AUTH` Value: `<token>`
   * Possible response:
     * 200: If token is successfully deleted, `true` will be returned in response body.
     * 403: If token is not valid or expired, or passed token Id does not belong to user whose token is passed in `Q-AUTH` header.
     * 500: If anything wents wrong. Proper error message will be included in response body.
+
+#### How it works?
+* When user gets authenticated successfully, a random auth token is generated and saved in `user_tokens` table, against that user, along with other user's device details.
+* All the secured endpoints (which contains `/s/` in their request path), are intercepted by `AuthInterceptor` and token is verified. If token is invalid or expired, then `403` status is returned. If token is valid, but user's role is not allowed to access that particular API (by checking request path in `role_api` table), then again `403` status is returned. If till here everything is fine, request is forwarded to respective controller from interceptor.
+
+#### Configurations available:
+* `token.expiry.duration`: Token expiry time in seconds. If `<0` then it will be considered as infinite, and token will never expire.
+  * Default: 3600
+* `header.auth.name`: Header name, which should contain access token.
+  * Default: Q-AUTH
+* `multi.device.login.allowed`: If true, user can have multiple active logins (active tokens) simultaneously. If false, user can have only one login (active token) at a time.
+  * Possible values: `true` or `false`
+  * Default: true
+* `track.user.device.info`: If true, user's device info like IP, OS, Browser, etc. will be saved when user will login. If false, these information will not be saved.
+  * Possible values: `true` or `false`
+  * Default: true  
