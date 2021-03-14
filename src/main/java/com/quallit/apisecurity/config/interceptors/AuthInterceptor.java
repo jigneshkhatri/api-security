@@ -3,7 +3,9 @@
  */
 package com.quallit.apisecurity.config.interceptors;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -15,8 +17,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.quallit.apisecurity.constants.Constants;
@@ -79,7 +88,11 @@ public class AuthInterceptor implements HandlerInterceptor {
 			}
 		}
 
-		if (!this.roleApiService.existsByUserIdAndApiPath(ut.getUserId(), apiPath)) {
+		final String requestMethod = request.getMethod();
+		final HandlerMethod method = (HandlerMethod) handler;
+		List<String> mappingUrls = this.getMappingUrls(requestMethod, method);
+
+		if (!this.roleApiService.existsByUserIdAndApiPaths(ut.getUserId(), mappingUrls)) {
 			throw new AuthException(AuthException.Codes.QA_004);
 		}
 
@@ -88,6 +101,44 @@ public class AuthInterceptor implements HandlerInterceptor {
 
 		LOGGER.info("===> Authenticating Request - End");
 		return true;
+	}
+
+	private List<String> getMappingUrls(String requestMethod, HandlerMethod handlerMethod) {
+		String entityType = "/";
+		if (handlerMethod.getBeanType().isAnnotationPresent(RequestMapping.class)) {
+			RequestMapping requestMapping = handlerMethod.getBeanType().getAnnotation(RequestMapping.class);
+			entityType += requestMapping.value()[0] + "/";
+		}
+		if (handlerMethod.hasMethodAnnotation(RequestMapping.class)) {
+			RequestMapping requestMapping = handlerMethod.getMethodAnnotation(RequestMapping.class);
+			return concatStrInArray(requestMapping.value(), entityType);
+		}
+		switch (requestMethod) {
+		case "GET":
+			GetMapping getMapping = handlerMethod.getMethodAnnotation(GetMapping.class);
+			return concatStrInArray(getMapping.value(), entityType);
+		case "POST":
+			PostMapping postMapping = handlerMethod.getMethodAnnotation(PostMapping.class);
+			return concatStrInArray(postMapping.value(), entityType);
+		case "PUT":
+			PutMapping putMapping = handlerMethod.getMethodAnnotation(PutMapping.class);
+			return concatStrInArray(putMapping.value(), entityType);
+		case "DELETE":
+			DeleteMapping deleteMapping = handlerMethod.getMethodAnnotation(DeleteMapping.class);
+			return concatStrInArray(deleteMapping.value(), entityType);
+		case "PATCH":
+			PatchMapping patchMapping = handlerMethod.getMethodAnnotation(PatchMapping.class);
+			return concatStrInArray(patchMapping.value(), entityType);
+		}
+		return Collections.emptyList();
+	}
+
+	private List<String> concatStrInArray(String[] arr, String prefix) {
+		List<String> retValue = new ArrayList<>();
+		for (String single : arr) {
+			retValue.add(prefix + single);
+		}
+		return retValue;
 	}
 
 }

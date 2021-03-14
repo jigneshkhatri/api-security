@@ -12,6 +12,11 @@ import java.util.Map;
  */
 public class AuthException extends QuallitException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6007328785610704683L;
+
 	public AuthException(String code) {
 		super(code, MESSAGES.get(code));
 	}
@@ -45,6 +50,7 @@ public class AuthException extends QuallitException {
 		MESSAGES.put(Codes.QA_004, "Unauthorized access to API");
 		MESSAGES.put(Codes.QA_005, "Invalid username");
 		MESSAGES.put(Codes.QA_006, "Invalid password");
-
+		MESSAGES.put(Codes.QA_007, "Account is not active");
+		MESSAGES.put(Codes.QA_008, "Unauthorized access to Data");
 	}
 }

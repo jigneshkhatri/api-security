@@ -16,4 +16,14 @@
 		<sqlFile encoding="utf8"
 			path="db/changelog/auth/1614779798247.sql" />
 	</changeSet>
+	<changeSet id="1615574932714" author="jigs">
+		<comment>Added user tracking fields in user_token table</comment>
+		<sqlFile encoding="utf8"
+			path="db/changelog/auth/1615574932714.sql" />
+	</changeSet>
+	<changeSet id="1615577266440" author="jigs">
+		<comment>Added token related APIs and access to it</comment>
+		<sqlFile encoding="utf8"
+			path="db/changelog/auth/1615577266440.sql" />
+	</changeSet>
 </databaseChangeLog>

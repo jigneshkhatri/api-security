@@ -4,6 +4,7 @@
 package com.quallit.apisecurity.dtos.common;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 
@@ -31,6 +32,8 @@ public class APIError {
 	/** The error code. */
 	private String errorCode;
 
+	private Map<String, String> fieldErrors;
+
 	/**
 	 * Instantiates a new API error.
 	 *
@@ -42,6 +45,7 @@ public class APIError {
 		this.message = apiErrorBuilder.message;
 		this.status = apiErrorBuilder.status;
 		this.timestamp = apiErrorBuilder.timestamp;
+		this.fieldErrors = apiErrorBuilder.fieldErrors;
 	}
 
 	/**
@@ -90,6 +94,15 @@ public class APIError {
 	}
 
 	/**
+	 * Gets the field errors.
+	 *
+	 * @return the field errors
+	 */
+	public Map<String, String> getFieldErrors() {
+		return fieldErrors;
+	}
+
+	/**
 	 * The Class APIErrorBuilder.
 	 */
 	public static class APIErrorBuilder {
@@ -108,6 +121,9 @@ public class APIError {
 
 		/** The timestamp. */
 		private Date timestamp;
+
+		/** The field errors. */
+		private Map<String, String> fieldErrors;
 
 		/**
 		 * Instantiates a new API error.
@@ -169,6 +185,17 @@ public class APIError {
 		 */
 		public APIErrorBuilder errorCode(String errorCode) {
 			this.errorCode = errorCode;
+			return this;
+		}
+
+		/**
+		 * Field errors.
+		 *
+		 * @param fieldErrors the field errors
+		 * @return the API error builder
+		 */
+		public APIErrorBuilder fieldErrors(Map<String, String> fieldErrors) {
+			this.fieldErrors = fieldErrors;
 			return this;
 		}
 

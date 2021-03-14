@@ -10,9 +10,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.quallit.apisecurity.dtos.LoginDTO;
+import com.quallit.apisecurity.entities.Role;
 import com.quallit.apisecurity.entities.User;
 import com.quallit.apisecurity.entities.UserToken;
+import com.quallit.apisecurity.enums.StatusEnum;
 import com.quallit.apisecurity.exceptions.AuthException;
+import com.quallit.apisecurity.exceptions.BusinessRuleValidationException;
 import com.quallit.apisecurity.repositories.IUserRepository;
 import com.quallit.apisecurity.services.common.ICreateUpdateService;
 import com.quallit.apisecurity.services.common.IReadService;
@@ -38,6 +42,9 @@ public class UserService implements ICreateUpdateService<User>, IReadService<Use
 	@Value("${multi.device.login.allowed}")
 	private Boolean isMultiDeviceLoginAllowed;
 
+	@Autowired
+	private RoleService roleService;
+
 	@Override
 	public JpaRepository<User, Long> getRepository() {
 		return this.userRepository;
@@ -49,6 +56,21 @@ public class UserService implements ICreateUpdateService<User>, IReadService<Use
 		if (ObjectUtil.isNotEmpty(obj.getPassword())) {
 			obj.setPassword(passwordEncoder.encode(obj.getPassword()));
 		}
+		if (ObjectUtil.isNotEmpty(obj.getEmail())
+				&& this.userRepository.countByEmail(obj.getEmail(), obj.getId()) > 0l) {
+			throw new BusinessRuleValidationException(BusinessRuleValidationException.Codes.QBRV_002);
+		}
+		if (ObjectUtil.isNotEmpty(obj.getMobile())
+				&& this.userRepository.countByMobile(obj.getMobile(), obj.getId()) > 0l) {
+			throw new BusinessRuleValidationException(BusinessRuleValidationException.Codes.QBRV_003);
+		}
+		if (ObjectUtil.isEmpty(obj.getId())) {
+			Role role = this.roleService.findByCode(obj.getRole());
+			if (ObjectUtil.isEmpty(role)) {
+				throw new BusinessRuleValidationException(BusinessRuleValidationException.Codes.QBRV_001);
+			}
+			obj.setRoleId(role.getId());
+		}
 		return ICreateUpdateService.super.saveOrUpdate(obj);
 	}
 
@@ -58,12 +80,15 @@ public class UserService implements ICreateUpdateService<User>, IReadService<Use
 	}
 
 	@Transactional
-	public User login(String username, String password) {
-		User user = this.userRepository.findByEmailOrMobile(username);
+	public User login(LoginDTO loginDTO) {
+		User user = this.userRepository.findByEmailOrMobile(loginDTO.getUsername());
 		if (ObjectUtil.isEmpty(user)) {
 			throw new AuthException(AuthException.Codes.QA_005);
 		}
-		if (!this.passwordEncoder.matches(password, user.getPassword())) {
+		if (user.getStatus() != StatusEnum.ACTIVE) {
+			throw new AuthException(AuthException.Codes.QA_007);
+		}
+		if (!this.passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
 			throw new AuthException(AuthException.Codes.QA_006);
 		}
 		if (!ObjectUtil.isTrue(this.isMultiDeviceLoginAllowed, true)) {
@@ -71,7 +96,7 @@ public class UserService implements ICreateUpdateService<User>, IReadService<Use
 			// from older device
 			this.userTokenService.deleteByUserId(user.getId());
 		}
-		UserToken userToken = this.userTokenService.saveToken(user.getId());
+		UserToken userToken = this.userTokenService.saveToken(user.getId(), loginDTO);
 		user.setUserToken(userToken);
 		return user;
 	}

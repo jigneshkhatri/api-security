@@ -18,4 +18,10 @@ public interface IUserRepository extends JpaRepository<User, Long> {
 
 	@Query("SELECT u FROM User u WHERE u.email=:username OR u.mobile=:username")
 	public User findByEmailOrMobile(String username);
+
+	@Query("SELECT COUNT(u.id) FROM User u WHERE u.email=:email AND (:id IS NULL OR u.id != :id)")
+	public Long countByEmail(String email, Long id);
+
+	@Query("SELECT COUNT(u.id) FROM User u WHERE u.mobile=:mobile AND (:id IS NULL OR u.id != :id)")
+	public Long countByMobile(String mobile, Long id);
 }

@@ -35,6 +35,9 @@ public class User extends AbstractEntity {
 	@Transient
 	private UserToken userToken;
 
+	@Transient
+	private String role;
+
 	private StatusEnum status;
 
 	@Column(name = "created_on", insertable = false, updatable = false)
@@ -125,6 +128,14 @@ public class User extends AbstractEntity {
 	 */
 	public void setUserToken(UserToken userToken) {
 		this.userToken = userToken;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	/**

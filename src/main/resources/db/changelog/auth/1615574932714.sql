@@ -1,0 +1,7 @@
+
+ALTER TABLE `user_tokens` 
+ADD COLUMN `os` VARCHAR(100) NULL AFTER `device_id`,
+ADD COLUMN `ip` VARCHAR(40) NULL AFTER `os`,
+ADD COLUMN `location` VARCHAR(100) NULL AFTER `ip`,
+ADD COLUMN `browser` VARCHAR(100) NULL AFTER `location`,
+ADD COLUMN `referer` VARCHAR(100) NULL AFTER `browser`;

@@ -120,4 +120,12 @@ public abstract class AbstractDTO implements Serializable {
 		this.status = status;
 	}
 
+	// Default Validation Groups - Start
+	public static interface SaveValidationGroup {
+	}
+
+	public static interface UpdateValidationGroup {
+	}
+	// Default Validation Groups - End
+
 }

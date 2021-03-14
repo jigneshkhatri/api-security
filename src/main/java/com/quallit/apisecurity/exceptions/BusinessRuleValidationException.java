@@ -34,24 +34,13 @@ public class BusinessRuleValidationException extends QuallitException {
 		public static final String QBRV_001 = "QBRV_001";
 		public static final String QBRV_002 = "QBRV_002";
 		public static final String QBRV_003 = "QBRV_003";
-		public static final String QBRV_004 = "QBRV_004";
-		public static final String QBRV_005 = "QBRV_005";
-		public static final String QBRV_006 = "QBRV_006";
-		public static final String QBRV_007 = "QBRV_007";
-		public static final String QBRV_008 = "QBRV_008";
 	}
 
 	private static final Map<String, String> MESSAGES = new HashMap<>();
 
 	static {
-		MESSAGES.put(Codes.QBRV_001, "Account with entered Email already exists");
-		MESSAGES.put(Codes.QBRV_002, "Account with entered Contact Number already exists");
-		MESSAGES.put(Codes.QBRV_003, "Missing branch information in headers");
-		MESSAGES.put(Codes.QBRV_004, "Not authenticated");
-		MESSAGES.put(Codes.QBRV_005, "Not authorized");
-		MESSAGES.put(Codes.QBRV_006, "Account is not active");
-		MESSAGES.put(Codes.QBRV_007, "Invalid Username/Password");
-		MESSAGES.put(Codes.QBRV_008, "No account exists for entered Username");
-
+		MESSAGES.put(Codes.QBRV_001, "Invalid Role");
+		MESSAGES.put(Codes.QBRV_002, "Account with entered email already exists");
+		MESSAGES.put(Codes.QBRV_003, "Account with entered mobile number already exists");
 	}
 }

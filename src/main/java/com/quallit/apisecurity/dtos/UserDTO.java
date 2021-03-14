@@ -3,6 +3,8 @@
  */
 package com.quallit.apisecurity.dtos;
 
+import javax.validation.constraints.NotNull;
+
 import com.quallit.apisecurity.dtos.common.AbstractDTO;
 
 /**
@@ -16,12 +18,20 @@ public class UserDTO extends AbstractDTO {
 	 */
 	private static final long serialVersionUID = 7663847048422620624L;
 
+	@NotNull(groups = { AbstractDTO.SaveValidationGroup.class })
 	private String name;
 	private String email;
+
+	@NotNull(groups = { AbstractDTO.SaveValidationGroup.class })
 	private String mobile;
+
+	@NotNull(groups = { AbstractDTO.SaveValidationGroup.class })
 	private String password;
 	private Long roleId;
 	private UserTokenDTO userToken;
+
+	@NotNull(groups = { AbstractDTO.SaveValidationGroup.class })
+	private String role;
 
 	/**
 	 * @return the name
@@ -105,6 +115,14 @@ public class UserDTO extends AbstractDTO {
 	 */
 	public void setUserToken(UserTokenDTO userToken) {
 		this.userToken = userToken;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 }
