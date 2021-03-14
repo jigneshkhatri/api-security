@@ -61,9 +61,106 @@ Spring boot starter project, with all the abstract classes for controller, servi
 ### Quallit API Security layer:
 
 * To enable Quallit API Security layer, add `@EnableQuallitApiSecurity` annotation on any `configuration` class or `main` class of spring boot project.
-* Once it is enabled, it will create below tables in database:
+* Once it is enabled, it will create below tables in database, with the help of liquibase:
   * `users` - Contains basic user details along with role
   * `roles` - Contains roles, which can be assigned to users
   * `apis` - Should contain all the APIs, which needs to be secured. The APIs which contains `/s/` in their request path, are secured by default when Quallit API Security layer is enabled.
   * `role_api` - Maps roles, with the allowed APIs
   * `user_tokens` - Contains the access tokens, and other user login details
+
+#### Endpoints to consider:
+* **User Registration:**
+  * Request path: `POST /user/register`
+  * Request body:
+    * ```
+      {
+          "name": "Jigs",
+          "mobile": "1234567890",
+          "email": "test@test.com (optional)",
+          "password": "123465",
+          "role": "ADMIN"
+      }
+      ```
+  * Possible response:
+    * 200: When user is created successfully. All user data is returned in response body.
+    * 500: When required fields are missing, or mobile number is not unique, or any other validation fails. Proper error message will be included in response body.
+  * NOTE: Password is hased by BCrypt alogrithm, and only hash is stored in database.
+* **Login:**
+  * Request path: `POST /user/login`
+  * Request body:
+    * ```
+      {
+          "username": "1234567890 (or email)",
+          "password": "123465"
+      }
+      ```
+  * Possible response:
+    * 200: When user is logged in successully. Token and other login details are returned in response body. Below is the sample response body:
+      * ```
+        {
+          "data": {
+              "id": 1,
+              "createdOn": "2021-03-12T19:02:39.000+00:00",
+              "updatedOn": "2021-03-12T19:02:39.000+00:00",
+              "status": "ACTIVE",
+              "name": "Jigs",
+              "mobile": "123456789",
+              "email": "test@test.com",
+              "roleId": 1,
+              "userToken": {
+                  "token": "8uWLA3BTovfvUuTCAfrhGX8zgZKzz3G6",
+                  "issuedAt": "2021-03-14T06:04:46.095+00:00",
+                  "expiresIn": -1 (Number of seconds to expire this token. -1 or NULL means it will never expire.)
+              }
+           }
+        }
+        ```
+    * 500: If username and/or password are invalid or user is not active, or there is any error in login. Proper error message will be included in response body.
+* **My (User's Own) Details:**
+  * Request path: `GET /user/s/me`
+  * Header: `Q-AUTH` Value: `<token>`
+  * Possible response:
+    * 200: If token is valid, user's details will be returned in response body.
+    * 403: If token is not valid or expired.
+    * 500: If anything wents wrong. Proper error message will be included in response body.
+* **Active Logins:**
+  * Request path: `GET /user/s/activeLogins`
+  * Header: `Q-AUTH` Value: `<token>`
+  * Possible response:
+     * 200: If token is valid, all the user's active logins (sessions) will be returned. Below is the sample response body:
+       * ```
+         {
+           "data": [
+               {
+                   "id": 2,
+                   "userId": 1,
+                   "issuedAt": "2021-03-12T19:33:48.000+00:00",
+                   "expiresIn": -1,
+                   "deviceId": "PostmanRuntime/7.26.10",
+                   "os": "UnKnown, More-Info: PostmanRuntime/7.26.10",
+                   "ip": "127.0.1.1",
+                   "location": "127.0.1.1",
+                   "browser": "UnKnown, More-Info: PostmanRuntime/7.26.10"
+               },
+               {
+                   "id": 4,
+                   "userId": 1,
+                   "issuedAt": "2021-03-13T18:51:46.000+00:00",
+                   "expiresIn": -1,
+                   "deviceId": "PostmanRuntime/7.26.10",
+                   "os": "UnKnown, More-Info: PostmanRuntime/7.26.10",
+                   "ip": "127.0.1.1",
+                   "browser": "UnKnown, More-Info: PostmanRuntime/7.26.10"
+               }
+            ]
+         }
+         ```
+      * 403: If token is not valid or expired.
+      * 500: If anything wents wrong. Proper error message will be included in response body.
+* **Revoke any own active token:**
+  * Request path: `DELETE /user/s/revokeToken/4 (token Id)`
+  * Header: `Q-AUTH` Value: `<token>`
+  * Possible response:
+    * 200: If token is successfully deleted, `true` will be returned in response body.
+    * 403: If token is not valid or expired, or passed token Id does not belong to user whose token is passed in `Q-AUTH` header.
+    * 500: If anything wents wrong. Proper error message will be included in response body.
