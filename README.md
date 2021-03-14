@@ -58,3 +58,12 @@ Spring boot starter project, with all the abstract classes for controller, servi
 * **BusinessRuleValidationException:**
   * Extends `QuallitException`, and is thrown whenever any business rule fails - like if username already exists or password is incorrect, etc., while using Quallit API Security layer.
 
+### Quallit API Security layer:
+
+* To enable Quallit API Security layer, add `@EnableQuallitApiSecurity` annotation on any `configuration` class or `main` class of spring boot project.
+* Once it is enabled, it will create below tables in database:
+  * `users` - Contains basic user details along with role
+  * `roles` - Contains roles, which can be assigned to users
+  * `apis` - Should contain all the APIs, which needs to be secured. The APIs which contains `/s/` in their request path, are secured by default when Quallit API Security layer is enabled.
+  * `role_api` - Maps roles, with the allowed APIs
+  * `user_tokens` - Contains the access tokens, and other user login details
