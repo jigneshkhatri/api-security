@@ -25,8 +25,8 @@ import com.quallit.springbootstarter.utilities.ObjectUtil;
 @Component
 public class UserControllerAspect {
 
-	private final static String LOGIN = "execution(* com.quallit.apisecurity.controllers.UserController.login(..))";
-	private final static String REVOKE_TOKEN = "execution(* com.quallit.apisecurity.controllers.UserController.revokeToken(..))";
+	private final static String LOGIN = "execution(* com.quallit.springbootstarter.controllers.UserController.login(..))";
+	private final static String REVOKE_TOKEN = "execution(* com.quallit.springbootstarter.controllers.UserController.revokeToken(..))";
 
 	@Autowired
 	private UserTokenService userTokenService;

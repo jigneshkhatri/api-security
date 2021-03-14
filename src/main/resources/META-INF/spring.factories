@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.quallit.apisecurity.config.AppConfig
+com.quallit.springbootstarter.config.AppConfig

@@ -11,7 +11,7 @@ import org.springframework.context.annotation.PropertySource;
  *
  */
 @Configuration
-@PropertySource(value = "classpath:apisecurity-application.properties")
+@PropertySource(value = "classpath:quallitspringbootstarter-application.properties")
 public class AppConfig {
 
 }

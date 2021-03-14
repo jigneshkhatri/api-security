@@ -23,9 +23,9 @@ import liquibase.integration.spring.SpringLiquibase;
  * @author jigs
  *
  */
-@ComponentScan(basePackages = "com.quallit.apisecurity")
-@EnableJpaRepositories(basePackages = "com.quallit.apisecurity.repositories")
-@EntityScan(basePackages = "com.quallit.apisecurity.entities")
+@ComponentScan(basePackages = "com.quallit.springbootstarter")
+@EnableJpaRepositories(basePackages = "com.quallit.springbootstarter.repositories")
+@EntityScan(basePackages = "com.quallit.springbootstarter.entities")
 public class ApiSecurityConfig implements WebMvcConfigurer {
 
 	@Autowired
